@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <RootNamespace>RestoreMonarchy.Duty</RootNamespace>
+        <Version>1.0.0</Version>
+        <AssemblyName>Duty</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="..\lib\*.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+          <HintPath>lib\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="com.rlabrecque.steamworks.net">
+          <HintPath>lib\com.rlabrecque.steamworks.net.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Rocket.API">
+          <HintPath>lib\Rocket.API.dll</HintPath>
+        </Reference>
+        <Reference Include="Rocket.Core">
+          <HintPath>lib\Rocket.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Rocket.Unturned">
+          <HintPath>lib\Rocket.Unturned.dll</HintPath>
+        </Reference>
+        <Reference Include="SDG.NetTransport">
+          <HintPath>lib\SDG.NetTransport.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+          <HintPath>lib\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+          <HintPath>lib\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+          <HintPath>lib\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RestoreMonarchy.RocketRedist" Version="3.24.3" />
+      <PackageReference Include="RestoreMonarchy.UnturnedRedist" Version="3.24.3" />
+    </ItemGroup>
+
+</Project>
