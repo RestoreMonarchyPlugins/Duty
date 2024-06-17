@@ -2,14 +2,11 @@ namespace RestoreMonarchy.Duty.Models;
 
 public class UIService
 {
-    public bool UIEnabled;
-    public ushort EffectID;
-    public short EffectKey;
+    public bool UIEnabled { get; set; }
+    public ushort EffectID { get; set; }
+    public short EffectKey { get; set; }
     
-    public UIService()
-    {
-        
-    }
+    public UIService() { }
     
     public UIService(bool uiEnabled, ushort effectId, short effectKey)
     {

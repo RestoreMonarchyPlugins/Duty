@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 using RestoreMonarchy.Duty.Models;
 using RestoreMonarchy.Duty.Models.Discord;
 using Rocket.API;
@@ -7,22 +8,20 @@ namespace RestoreMonarchy.Duty
 {
     public class DutyConfiguration : IRocketPluginConfiguration
     {
-        public UIService UIService;
-        public DiscordService DiscordService;
-        public List<DutyGroups> DutyGroups;
-
+        public UIService UIService { get; set; }
+        public DiscordConfig Discord { get; set; }
+        public List<DutyGroups> DutyGroups { get; set; }
 
         public void LoadDefaults()
         {
             UIService = new UIService(true, 59501, 32000);
-            DiscordService = new()
+            Discord = new()
             {
-                DiscordEnabled = true,
+                Enabled = true,
                 DutyStarted = new()
                 {
                     Enabled = true,
-                    WebhookUrl =
-                        "https://discord.com/api/webhooks/1220014553577033789/XCK-TGgToVRpL4mN0FlHUgfKDz58vT9DHk_QqbXi4lun2qorvZmFvYfj_6h5p0em35kt",
+                    WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
                         new()
@@ -65,8 +64,7 @@ namespace RestoreMonarchy.Duty
                 DutySummary = new()
                 {
                     Enabled = true,
-                    WebhookUrl =
-                        "https://discord.com/api/webhooks/1220014553577033789/XCK-TGgToVRpL4mN0FlHUgfKDz58vT9DHk_QqbXi4lun2qorvZmFvYfj_6h5p0em35kt",
+                    WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
                         new()
@@ -121,7 +119,7 @@ namespace RestoreMonarchy.Duty
             };
             DutyGroups = new List<DutyGroups>
             {
-                new DutyGroups("Admin", "Admin", "infectedduty.admin",
+                new DutyGroups("Admin", "Admin", "duty.admin",
                     new DutySettings(true, true, true, true, true, true, true, true, true)),
             };
         }

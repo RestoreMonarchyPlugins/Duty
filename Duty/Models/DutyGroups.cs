@@ -2,10 +2,10 @@ namespace RestoreMonarchy.Duty.Models;
 
 public class DutyGroups
 {
-    public string DutyGroupName;
-    public string PermGroup;
-    public string Permission;
-    public DutySettings DutySettings;
+    public string DutyGroupName { get; set; }
+    public string PermGroup { get; set; }
+    public string Permission { get; set; }
+    public DutySettings DutySettings { get; set; }
     
     public DutyGroups()
     {

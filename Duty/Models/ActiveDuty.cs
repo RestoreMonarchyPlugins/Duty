@@ -5,14 +5,12 @@ namespace RestoreMonarchy.Duty.Models;
 
 public class ActiveDuty
 {
-    public CSteamID PlayerId;
-    public string DutyGroupName;
-    public DateTime TimeStarted;
-    public DutySettings DutySettings;
+    public CSteamID PlayerId { get; set; }
+    public string DutyGroupName { get; set; }
+    public DateTime TimeStarted { get; set; }
+    public DutySettings DutySettings { get; set; }
     
-    public ActiveDuty()
-    {
-    }
+    public ActiveDuty() { }
     
     public ActiveDuty(CSteamID playerId, string dutyGroupName, DateTime timeStarted, DutySettings dutySettings)
     {

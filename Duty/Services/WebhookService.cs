@@ -36,7 +36,6 @@ namespace RestoreMonarchy.Duty.Services;
             };
 
             string content = JsonConvert.SerializeObject(message, jsonSerializerSettings);
-            Logger.Log(content);
             byte[] data = Encoding.UTF8.GetBytes(content);
 
             request.Method = "POST";

@@ -42,6 +42,7 @@ public class Duty : IRocketCommand
             UnturnedChat.Say(player.CSteamID, pluginInstance.Translate("duty_no_permission_group", dutyName));
             return;
         }
+
         DutyHelper.OnDuty(player, dutyName);
     }
 }

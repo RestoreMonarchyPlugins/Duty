@@ -10,7 +10,7 @@ using SDG.Unturned;
 
 namespace RestoreMonarchy.Duty.Helpers;
 
-public class DutyHelper
+public static class DutyHelper
 {
     private static DutyPlugin pluginInstance => DutyPlugin.Instance;
     private static DutyConfiguration config => pluginInstance.Configuration.Instance;
@@ -52,7 +52,7 @@ public class DutyHelper
         {
             player.Player.look.sendSpecStatsAllowed(true);
         }
-        if (config.DiscordService.DiscordEnabled && config.DiscordService.DutyStarted.Enabled)
+        if (config.Discord.Enabled && config.Discord.DutyStarted.Enabled)
         {
             Dictionary<string, object> param = new()
             {
@@ -70,7 +70,7 @@ public class DutyHelper
             };
             ThreadHelper.RunAsynchronously(() => 
             {
-                webhookService.SendMessage(config.DiscordService.DutyStarted, param);
+                webhookService.SendMessage(config.Discord.DutyStarted, param);
             });
            
         }
@@ -127,7 +127,7 @@ public class DutyHelper
                 UIHelper.DisableVanishUI(player);
             }
         }
-        if (config.DiscordService.DiscordEnabled && config.DiscordService.DutySummary.Enabled)
+        if (config.Discord.Enabled && config.Discord.DutySummary.Enabled)
         {
             Dictionary<string, object> param = new()
             {
@@ -147,7 +147,7 @@ public class DutyHelper
             };
             ThreadHelper.RunAsynchronously(() => 
             {
-                webhookService.SendMessage(config.DiscordService.DutySummary, param);
+                webhookService.SendMessage(config.Discord.DutySummary, param);
             });
            
         }

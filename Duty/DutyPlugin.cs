@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using RestoreMonarchy.Duty.Helpers;
+﻿using RestoreMonarchy.Duty.Helpers;
 using RestoreMonarchy.Duty.Models;
 using RestoreMonarchy.Duty.Services;
 using Rocket.API;
 using Rocket.API.Collections;
 using Rocket.Core;
+using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
@@ -35,17 +37,15 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onDamageBarricadeRequested += BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested += BarricadeOpenRequest;
         ItemManager.onTakeItemRequested += ItemTakeRequested;
-        if (config.DiscordService.DiscordEnabled)
+        if (config.Discord.Enabled)
         {
             WebhookService = new();
             ActiveDutyCommands = [];
             R.Commands.OnExecuteCommand += OnCommandExecuted;
         }
 
-        
+        Logger.Log($"{Name} {Assembly.GetName().Version} has been loaded!", ConsoleColor.Yellow);
     }
-    
-
 
     protected override void Unload()
     {
@@ -53,13 +53,15 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         {
             DutyHelper.OffDuty(UnturnedPlayer.FromCSteamID(activeDuty.PlayerId), activeDuty.DutyGroupName);
         }
+
         U.Events.OnPlayerDisconnected -= PlayerLeft;
         DamageTool.damagePlayerRequested -= DamagePlayerRequested;
         StructureManager.onDamageStructureRequested -= StructureDamageRequested;
         BarricadeManager.onDamageBarricadeRequested -= BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested -= BarricadeOpenRequest;
         ItemManager.onTakeItemRequested -= ItemTakeRequested;
-        if (config.DiscordService.DiscordEnabled)
+
+        if (config.Discord.Enabled)
         {
             R.Commands.OnExecuteCommand -= OnCommandExecuted;
             ActiveDutyCommands.Clear();
@@ -67,6 +69,8 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         }
         ActiveDuties.Clear();
         Instance = null;
+
+        Logger.Log($"{Name} has been unloaded!", ConsoleColor.Yellow);
     }
 
     public override TranslationList DefaultTranslations => new()
@@ -158,22 +162,21 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     private void OnCommandExecuted(IRocketPlayer player, IRocketCommand command, ref bool cancel)
     {
-        if (ActiveDuties.Any() && config.DiscordService.DiscordEnabled && player is UnturnedPlayer unturnedPlayer)
+        if (ActiveDuties.Any() && config.Discord.Enabled && player is UnturnedPlayer unturnedPlayer)
         {
             if (ActiveDuties.Exists(x => x.PlayerId == unturnedPlayer.CSteamID))
             {
                
-                    ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
-                    if (activeDuty == null) return;
-                    if (ActiveDutyCommands.ContainsKey(unturnedPlayer.CSteamID))
-                    {
-                        ActiveDutyCommands[unturnedPlayer.CSteamID].Add(command.Name);
-                        Logger.LogError("Added command" + " " + command.Name + " " + "to the list");
-                    }
-                    else
-                    {
-                        ActiveDutyCommands.Add(unturnedPlayer.CSteamID, new List<string> { command.Name });
-                    }
+                ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
+                if (activeDuty == null) return;
+                if (ActiveDutyCommands.ContainsKey(unturnedPlayer.CSteamID))
+                {
+                    ActiveDutyCommands[unturnedPlayer.CSteamID].Add(command.Name);
+                }
+                else
+                {
+                    ActiveDutyCommands.Add(unturnedPlayer.CSteamID, new List<string> { command.Name });
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ using Action = System.Action;
 
 namespace RestoreMonarchy.Duty.Helpers;
 
-public class ThreadHelper
+internal static class ThreadHelper
 {
     public static void Run(Action action, bool asynchronously, string exceptionMessage = null)
     {
