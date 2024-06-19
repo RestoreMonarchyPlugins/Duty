@@ -99,12 +99,6 @@ namespace RestoreMonarchy.Duty
                                     Name = "**Commands executed**",
                                     Value = "{commands_executed}",
                                     Inline = true
-                                },
-                                new()
-                                {
-                                    Name = "Admin Tools Usage",
-                                    Value = "{adminUsages}",
-                                    Inline = true
                                 }
                             ],
                             ColorHex = "#ff0000",
