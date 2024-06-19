@@ -27,7 +27,7 @@ namespace RestoreMonarchy.Duty
                         new()
                         {
                             Title = "Player came on duty",
-                            ColorHex = "#ff0000",
+                            ColorHex = "#00FF00",
                             Thumbnail = new()
                             {
                                 Url = "{thumbnail}"
