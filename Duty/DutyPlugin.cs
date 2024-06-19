@@ -166,6 +166,28 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         {
             if (ActiveDuties.Exists(x => x.PlayerId == unturnedPlayer.CSteamID))
             {
+                if (command.Name == "god")
+                {
+                    if (unturnedPlayer.GodMode == true)
+                    {
+                        UIHelper.DisableGodModeUI(unturnedPlayer);
+                    }
+                    else
+                    {
+                        UIHelper.EnableGodModeUI(unturnedPlayer);
+                    }
+                }
+                if (command.Name == "vanish")
+                {
+                    if (unturnedPlayer.Features.VanishMode == true)
+                    {
+                        UIHelper.DisableVanishUI(unturnedPlayer);
+                    }
+                    else
+                    {
+                        UIHelper.EnableVanishUI(unturnedPlayer);
+                    }
+                }
                
                 ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
                 if (activeDuty == null) return;
