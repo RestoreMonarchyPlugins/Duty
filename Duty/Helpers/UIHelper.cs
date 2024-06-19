@@ -32,7 +32,7 @@ public class UIHelper
     public static void DisableDutyUI(UnturnedPlayer player)
     {
         ITransportConnection transportconnection = Provider.findTransportConnection(player.CSteamID);
-        EffectManager.sendUIEffect(config.UIService.EffectID, config.UIService.EffectKey, transportconnection, false);
+        EffectManager.askEffectClearByID(config.UIService.EffectID, transportconnection);
     }
     
     public static void DisableVanishUI(UnturnedPlayer player)
