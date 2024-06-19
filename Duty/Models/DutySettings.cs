@@ -10,12 +10,12 @@ public class DutySettings
     public bool BlockStructureDamage { get; set; }
     public bool BlockBarricadeDamage { get; set; }
     public bool BlockStorageInteraction { get; set; }
-    public bool ItemPickup { get; set; }
+    public bool BlockItemPickup { get; set; }
     
     public DutySettings()
     {
     }
-    public DutySettings(bool godMode, bool vanish, bool freecam, bool adminEsp, bool blockDamageToPlayers, bool blockStructureDamage, bool blockBarricadeDamage, bool blockObjectInteraction, bool itemPickup)
+    public DutySettings(bool godMode, bool vanish, bool freecam, bool adminEsp, bool blockDamageToPlayers, bool blockStructureDamage, bool blockBarricadeDamage, bool blockObjectInteraction, bool blockItemPickup)
     {
         GodMode = godMode;
         Vanish = vanish;
@@ -25,6 +25,6 @@ public class DutySettings
         BlockStructureDamage = blockStructureDamage;
         BlockBarricadeDamage = blockBarricadeDamage;
         BlockStorageInteraction = blockObjectInteraction;
-        ItemPickup = itemPickup;
+        BlockItemPickup = blockItemPickup;
     }
 }

@@ -188,7 +188,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
             ActiveDuty activeDuty = ActiveDuties.First(ad => ad.PlayerId == player.channel.owner.playerID.steamID);
             DutyGroups dutyGroup = config.DutyGroups.Find(ad => ad.DutyGroupName == activeDuty.DutyGroupName);
             // Couldn't use x here due to the fact that function has a byte x parameter
-            if (dutyGroup != null && dutyGroup.DutySettings.ItemPickup)
+            if (dutyGroup != null && dutyGroup.DutySettings.BlockItemPickup)
             {
                 shouldallow = false;
             }
