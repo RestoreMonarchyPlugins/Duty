@@ -52,6 +52,11 @@ public static class DutyHelper
         {
             player.Player.look.sendSpecStatsAllowed(true);
         }
+
+        if (dutySettings.AdminBuilding)
+        {
+            player.Player.look.sendWorkzoneAllowed(true);
+        }
         if (config.Discord.Enabled && config.Discord.DutyStarted.Enabled)
         {
             Dictionary<string, object> param = new()
@@ -126,6 +131,10 @@ public static class DutyHelper
             {
                 UIHelper.DisableVanishUI(player);
             }
+        }
+        if (dutyGroups.DutySettings.AdminBuilding)
+        {
+            player.Player.look.sendWorkzoneAllowed(false);
         }
         if (config.Discord.Enabled && config.Discord.DutySummary.Enabled)
         {

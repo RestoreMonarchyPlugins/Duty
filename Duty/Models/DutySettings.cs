@@ -6,6 +6,8 @@ public class DutySettings
     public bool Vanish { get; set; }
     public bool AdminFreecam { get; set; }
     public bool AdminEsp { get; set; }
+    
+    public bool AdminBuilding { get; set; }
     public bool BlockDamageToPlayers { get; set; }
     public bool BlockStructureDamage { get; set; }
     public bool BlockBarricadeDamage { get; set; }
@@ -15,12 +17,13 @@ public class DutySettings
     public DutySettings()
     {
     }
-    public DutySettings(bool godMode, bool vanish, bool freecam, bool adminEsp, bool blockDamageToPlayers, bool blockStructureDamage, bool blockBarricadeDamage, bool blockObjectInteraction, bool blockItemPickup)
+    public DutySettings(bool godMode, bool vanish, bool freecam, bool adminEsp, bool adminBuilding, bool blockDamageToPlayers, bool blockStructureDamage, bool blockBarricadeDamage, bool blockObjectInteraction, bool blockItemPickup)
     {
         GodMode = godMode;
         Vanish = vanish;
         AdminFreecam = freecam;
         AdminEsp = adminEsp;
+        AdminBuilding = adminBuilding;
         BlockDamageToPlayers = blockDamageToPlayers;
         BlockStructureDamage = blockStructureDamage;
         BlockBarricadeDamage = blockBarricadeDamage;

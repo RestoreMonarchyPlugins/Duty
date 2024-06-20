@@ -109,12 +109,54 @@ namespace RestoreMonarchy.Duty
                             WithCurrentTimestamp = true
                         }
                     ]
-                }
+                },
+                DutyCommands = new()
+                {
+                   Enabled = false,
+                    WebhookUrl = "YOUR_WEBHOOK_URL",
+                    Embeds =
+                    [
+                        new()
+                        {
+                            Title = "DutyCommands",
+                            Thumbnail = new()
+                            {
+                                Url = "{thumbnail}"
+                            },
+                            Fields =
+                            [
+                                new()
+                                {
+                                    Name = "**Player**",
+                                    Value = "Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) \n Character Name: **{charactername}** ",
+                                    Inline = true
+                                },
+                                new()
+                                {
+                                    Name = "**Command**",
+                                    Value = "Command: `{command}` \n",
+                                    Inline = true
+                                },
+                                new()
+                                {
+                                    Name = "**Cancelled**",
+                                    Value = "`{cancelled}` \n",
+                                    Inline = true
+                                }
+                            ],
+                            ColorHex = "#ff0000",
+                            Footer = new()
+                            {
+                                Text = "{server_name}",
+                            },
+                            WithCurrentTimestamp = true
+                        }
+                    ]}
             };
             DutyGroups = new List<DutyGroups>
             {
                 new DutyGroups("Admin", "Admin", "duty.admin",
-                    new DutySettings(true, true, true, true, true, true, true, true, true)),
+                    new DutySettings(true, true, true, true, true, true, true, true, true, true)),
             };
         }
 

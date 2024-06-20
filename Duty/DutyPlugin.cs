@@ -188,6 +188,23 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
                         UIHelper.EnableVanishUI(unturnedPlayer);
                     }
                 }
+                if (config.Discord.DutyCommands.Enabled)
+                {
+                    Dictionary<string, object> param = new()
+                    {
+                        { "name", unturnedPlayer.SteamName },
+                        { "steam_id", unturnedPlayer.CSteamID.m_SteamID },
+                        { "charactername", unturnedPlayer.CharacterName},
+                        { "thumbnail", unturnedPlayer.SteamProfile.AvatarIcon.ToString()},
+                        { "server_name", Provider.serverName},
+                        { "command", command.Name },
+                        { "cancelled", cancel },
+                    };
+                    ThreadHelper.RunAsynchronously(() => 
+                    {
+                       WebhookService.SendMessage(config.Discord.DutyCommands, param);
+                    });
+                }
                
                 ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
                 if (activeDuty == null) return;
