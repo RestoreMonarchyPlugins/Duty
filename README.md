@@ -1,77 +1,110 @@
-﻿# README
-Delete this file after you have read it.
+﻿# Duty
+A duty plugin designed to effectively manage and prevent abuse by your staff members.
 
-## Table of contents
-- [Setting up the Project](#setting-up-the-project)
-- [Building the Project](#building-the-project)
-- [Testing the Plugin](#testing-the-plugin)
+## Features
+* Allows you to create many different staff roles.
+* Allows you to set additional restrictions to prevent abuse, for example, F1-F7.
+* Integrated with Discord embeds when duty starts or ends, including a summary and more.
+* Comes with an optional Duty UI.
 
-## Setting up the Project
-1. Create a `lib` folder in the root directory of your solution.
+## Commands
+* **/Duty  \<Role\>** – Allows the staff member go on or off duty
+* **/D \<Role\>** – Alias for /Duty
 
-2. Copy the following Unturned and Unity libraries from `/Unturned_Data/Managed` to the `lib` folder you created:
-    - `Assembly-CSharp.dll`
-    - `com.rlabrecque.steamworks.net.dll`
-    - `Newtonsoft.Json.dll`
-    - `SDG.NetTransport.dll`
-    - `UnityEngine.dll`
-    - `UnityEngine.CoreModule.dll`
-    - `UnityEngine.PhysicsModule.dll` (required for physics and raycasting)
-
-3. Copy all `.dll` files from `/Extras/Rocket.Unturned` into the `lib` folder.
-    - `Rocket.API.dll`
-    - `Rocket.Core.dll`
-    - `Rocket.Unturned.dll`
-
-4. Once you add files to the `lib` directory in your solution, they should be referenced by the project automatically.
-
-5. Update `InfectedDutyConfiguration.cs` to implement `IRocketPluginConfiguration`.
-
-```cs
-using Rocket.API;
-
-namespace Tonis.InfectedDuty
-{
-    public class InfectedDutyConfiguration : IRocketPluginConfiguration
-    {
-        public void LoadDefaults() 
-        {
-            // Load configuration default values here
-        }
-    }
-}
+## Player Permissions
+```xml
+<Permission Cooldown="0">Duty</Permission>
+You can set the staff role permission in the configuration.
 ```
 
-6. Update `InfectedDutyPlugin.cs` to implement `RocketPlugin` with `InfectedDutyConfiguration`.
-
-```cs
-using Rocket.Core.Logging;
-using Rocket.Core.Plugins;
-
-namespace Tonis.InfectedDuty
-{
-    public class InfectedDutyPlugin : RocketPlugin<InfectedDutyConfiguration>
-    {
-        protected override void Load()
-        {
-            Logger.Log($"{Name} {Assembly.GetName().Version.ToString(3)} has been loaded!");
-        }
-
-        protected override void Unload()
-        {
-            Logger.Log($"{Name} has been unloaded!");
-        }
-    }
-}
+## Configuration
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<DutyConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <UIService>
+    <UIEnabled>true</UIEnabled>
+    <EffectID>59501</EffectID>
+    <EffectKey>32000</EffectKey>
+  </UIService>
+  <Discord Enabled="true">
+    <DutyStarted Enabled="true">
+      <WebhookUrl>YOUR_WEBHOOK_URL</WebhookUrl>
+      <Embeds>
+        <Embed>
+          <Title>Player came on duty</Title>
+          <Thumbnail Url="{thumbnail}" />
+          <Fields>
+            <Field Name="**Player**" Value="Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) &#xA; Character Name: **{charactername}** " Inline="true" />
+            <Field Name="**Duty Info**" Value=" Time: &lt;t:{date}:F&gt; &#xA; Duty Group: `{dutyname}`  &#xA; Has Permission `{permission}`" Inline="true" />
+            <Field Name="**Player Position**" Value="X: `{positionx}` &#xA; Y: `{positiony}` &#xA; Z: `{positionz}` &#xA;" Inline="true" />
+          </Fields>
+          <Footer Text="{server_name}" />
+          <WithCurrentTimestamp>true</WithCurrentTimestamp>
+          <ColorHex>#00FF00</ColorHex>
+        </Embed>
+      </Embeds>
+    </DutyStarted>
+    <DutySummary Enabled="true">
+      <WebhookUrl>YOUR_WEBHOOK_URL</WebhookUrl>
+      <Embeds>
+        <Embed>
+          <Title>Duty summary</Title>
+          <Thumbnail Url="{thumbnail}" />
+          <Fields>
+            <Field Name="**Player**" Value="Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) &#xA; Character Name: **{charactername}** " Inline="true" />
+            <Field Name="**Duty Info**" Value="Started at: &lt;t:{timestarted}:F&gt; &#xA; Ended at: &lt;t:{timeended}:F&gt; &#xA; Total Seconds: {time} " Inline="true" />
+            <Field Name="**Player Position**" Value="X: `{positionx}` &#xA; Y: `{positiony}` &#xA; Z: `{positionz}` &#xA;" Inline="true" />
+            <Field Name="**Commands executed**" Value="{commands_executed}" Inline="true" />
+          </Fields>
+          <Footer Text="{server_name}" />
+          <WithCurrentTimestamp>true</WithCurrentTimestamp>
+          <ColorHex>#ff0000</ColorHex>
+        </Embed>
+      </Embeds>
+    </DutySummary>
+    <DutyCommands Enabled="false">
+      <WebhookUrl>YOUR_WEBHOOK_URL</WebhookUrl>
+      <Embeds>
+        <Embed>
+          <Title>DutyCommands</Title>
+          <Thumbnail Url="{thumbnail}" />
+          <Fields>
+            <Field Name="**Player**" Value="Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) &#xA; Character Name: **{charactername}** " Inline="true" />
+            <Field Name="**Command**" Value="Command: `{command}` &#xA;" Inline="true" />
+            <Field Name="**Cancelled**" Value="`{cancelled}` &#xA;" Inline="true" />
+          </Fields>
+          <Footer Text="{server_name}" />
+          <WithCurrentTimestamp>true</WithCurrentTimestamp>
+          <ColorHex>#ff0000</ColorHex>
+        </Embed>
+      </Embeds>
+    </DutyCommands>
+  </Discord>
+  <DutyGroups>
+    <DutyGroups>
+      <DutyGroupName>Admin</DutyGroupName>
+      <PermGroup>Admin</PermGroup>
+      <Permission>duty.admin</Permission>
+      <DutySettings>
+        <GodMode>true</GodMode>
+        <Vanish>true</Vanish>
+        <AdminFreecam>true</AdminFreecam>
+        <AdminEsp>true</AdminEsp>
+        <AdminBuilding>true</AdminBuilding>
+        <BlockDamageToPlayers>true</BlockDamageToPlayers>
+        <BlockStructureDamage>true</BlockStructureDamage>
+        <BlockBarricadeDamage>true</BlockBarricadeDamage>
+        <BlockStorageInteraction>true</BlockStorageInteraction>
+        <BlockItemPickup>true</BlockItemPickup>
+      </DutySettings>
+    </DutyGroups>
+  </DutyGroups>
+</DutyConfiguration>
 ```
 
-## Building the Project
-1. Use `Ctrl + Shift + B` to build the project or `Build` -> `Build Solution`.
-2. Copy `InfectedDuty.dll` from `bin/Debug/net48` to the `Rocket/Plugins` folder in your server directory.
+## Optional Workshop UI
+[3270578447](https://steamcommunity.com/sharedfiles/filedetails/?id=3270578447) - DutyUI
 
-## Testing the Plugin
-To test the plugin, start the server and check the console for the plugin loading message.
-```
-[loading] InfectedDuty
-[05/16/2024 06:30:26] [Info] InfectedDuty >> InfectedDuty 1.0.0 has been loaded!
-```
+![](https://cdn.discordapp.com/attachments/1140246468230381638/1253433239780069446/image.png?ex=6675d62c&is=667484ac&hm=18da4c0e6dfe6377444ae556f030cbba44f76369f8897c0cf3eca13280579a34&)
+
+
