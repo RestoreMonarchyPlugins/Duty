@@ -22,7 +22,6 @@ public class WebhookService
 
         try
         {
-            Logger.Log(JsonConvert.SerializeObject(param));
             SendMessage(sendMessage.WebhookUrl, sendMessage);
         } catch (Exception e)
         {
@@ -40,7 +39,6 @@ public class WebhookService
         };
 
         string content = JsonConvert.SerializeObject(message, jsonSerializerSettings);
-        Logger.Log(content);
         byte[] data = Encoding.UTF8.GetBytes(content);
 
         request.Method = "POST";
