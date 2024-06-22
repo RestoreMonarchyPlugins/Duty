@@ -202,7 +202,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
                     };
                     ThreadHelper.RunAsynchronously(() => 
                     {
-                       WebhookService.SendMessage(config.Discord.DutyCommands, param);
+                        WebhookService.SendMessage(config.Discord.DutyCommands, param);
                     });
                 }
                

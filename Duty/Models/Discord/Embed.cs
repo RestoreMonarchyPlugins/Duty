@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
@@ -90,7 +91,7 @@ namespace RestoreMonarchy.Duty.Models.Discord;
                 Author = Author?.Clone() as EmbedAuthor,
                 Thumbnail = Thumbnail?.Clone() as EmbedThumbnail,
                 Image = Image?.Clone() as EmbedImage,
-                Fields = Fields?.Clone() as EmbedField[],
+                Fields = Fields?.Select(x => (EmbedField)x.Clone()).ToArray(),
                 Footer = Footer?.Clone() as EmbedFooter,
                 Timestamp = Timestamp
             };

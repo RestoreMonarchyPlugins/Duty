@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
@@ -157,12 +158,12 @@ namespace RestoreMonarchy.Duty.Models.Discord;
             {
                 Enabled = Enabled,
                 WebhookUrl = WebhookUrl,
-                ContentLines = ContentLines?.Clone() as string[],
-                Files = Files?.Clone() as byte[][],
+                ContentLines = ContentLines?.Select(x => (string)x.Clone()).ToArray(),
+                Files = Files?.Select(x => (byte[])x.Clone()).ToArray(),
                 Username = Username,
                 AvatarUrl = AvatarUrl,
                 Content = Content,
-                Embeds = Embeds?.Clone() as Embed[]
+                Embeds = Embeds?.Select(x => (Embed)x.Clone()).ToArray()
             };
         }
     }

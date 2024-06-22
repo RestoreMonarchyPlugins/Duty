@@ -9,12 +9,17 @@ namespace RestoreMonarchy.Duty
     public class DutyConfiguration : IRocketPluginConfiguration
     {
         public UIService UIService { get; set; }
-        public DiscordConfig Discord { get; set; }
         public List<DutyGroups> DutyGroups { get; set; }
+        public DiscordConfig Discord { get; set; }
 
         public void LoadDefaults()
         {
             UIService = new UIService(true, 59501, 32000);
+            DutyGroups = new List<DutyGroups>
+            {
+                new DutyGroups("Admin", "Admin", "duty.admin",
+                    new DutySettings(true, true, true, true, true, true, true, true, true, true)),
+            };
             Discord = new()
             {
                 Enabled = true,
@@ -152,11 +157,6 @@ namespace RestoreMonarchy.Duty
                             WithCurrentTimestamp = true
                         }
                     ]}
-            };
-            DutyGroups = new List<DutyGroups>
-            {
-                new DutyGroups("Admin", "Admin", "duty.admin",
-                    new DutySettings(true, true, true, true, true, true, true, true, true, true)),
             };
         }
 
