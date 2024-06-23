@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Security.Policy;
 using System.Xml.Serialization;
 using RestoreMonarchy.Duty.Models;
 using RestoreMonarchy.Duty.Models.Discord;
@@ -15,48 +17,83 @@ namespace RestoreMonarchy.Duty
         public void LoadDefaults()
         {
             UIService = new UIService(true, 59501, 32000);
-            DutyGroups = new List<DutyGroups>
-            {
-                new DutyGroups("Admin", "Admin", "duty.admin",
-                    new DutySettings(true, true, true, true, true, true, true, true, true, true)),
-            };
+            DutyGroups =
+            [
+                new()
+                {
+                    DutyGroupName = "Admin",
+                    PermGroup = "Admin",
+                    Permission = "duty.admin",
+                    DutySettings = new()
+                    {
+                        GodMode = true,
+                        Vanish = true,
+                        AdminFreecam = true,
+                        AdminEsp = true,
+                        AdminBuilding = true,
+                        BlockDamageToPlayers = true,
+                        BlockStructureDamage = true,
+                        BlockBarricadeDamage = true,
+                        BlockStorageInteraction = true,
+                        BlockItemPickup = true
+                    }
+                }
+            ];
             Discord = new()
             {
                 Enabled = true,
                 DutyStarted = new()
                 {
-                    Enabled = true,
+                    Enabled = false,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
                         new()
                         {
-                            Title = "Player came on duty",
+                            Title = "{character_name} started {duty_name} duty",
                             ColorHex = "#00FF00",
                             Thumbnail = new()
                             {
-                                Url = "{thumbnail}"
+                                Url = "{avatar_url}"
                             },
                             Fields =
                             [
                                 new()
                                 {
-                                    Name = "**Player**",
-                                    Value = "Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) \n Character Name: **{charactername}** ",
+                                    Name = "Steam ID",
+                                    Value = "`{steam_id}`",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Duty Info**",
-                                    Value = " Time: <t:{date}:F> \n Duty Group: `{dutyname}`  \n Has Permission `{permission}`",
+                                    Name = "Steam Name",
+                                    Value = "[{steam_name}](https://steamcommunity.com/profiles/{steam_id})",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Player Position**",
-                                    Value = "X: `{positionx}` \n Y: `{positiony}` \n Z: `{positionz}` \n",
+                                    Name = "Date",
+                                    Value = "<t:{date}>",
                                     Inline = true
-                                }
+                                },
+                                new()
+                                {
+                                    Name = "Group",
+                                    Value = "{duty_name}",
+                                    Inline = true
+                                },
+                                new()
+                                {
+                                    Name = "Permission",
+                                    Value = "`{permission}`",
+                                    Inline = true
+                                },                                
+                                new()
+                                {
+                                    Name = "Position",
+                                    Value = "`{position_x} {position_z} {position_y}`",
+                                    Inline = true
+                                },
                             ],
                             Footer = new()
                             {
@@ -68,43 +105,56 @@ namespace RestoreMonarchy.Duty
                 },
                 DutySummary = new()
                 {
-                    Enabled = true,
+                    Enabled = false,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
                         new()
                         {
-                            Title = "Duty summary",
+                            Title = "{character_name} {duty_name} duty summary",
+                            Description = "Commands Executed: ```{commands_executed}```",
                             Thumbnail = new()
                             {
-                                Url = "{thumbnail}"
+                                Url = "{avatar_url}"
                             },
                             Fields =
                             [
                                 new()
                                 {
-                                    Name = "**Player**",
-                                    Value = "Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) \n Character Name: **{charactername}** ",
+                                    Name = "Steam ID",
+                                    Value = "`{steam_id}`",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Duty Info**",
-                                    Value = "Started at: <t:{timestarted}:F> \n Ended at: <t:{timeended}:F> \n Total Seconds: {time} ",
+                                    Name = "Steam Name",
+                                    Value = "[{steam_name}](https://steamcommunity.com/profiles/{steam_id})",
+                                    Inline = true
+                                },
+                                new() 
+                                {
+                                    Name = "Duration",
+                                    Value = "{time} seconds",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Player Position**",
-                                    Value = "X: `{positionx}` \n Y: `{positiony}` \n Z: `{positionz}` \n",
+                                    Name = "Started At",
+                                    Value = "<t:{time_started}>",
+                                    Inline = true
+                                },
+                                new() 
+                                {
+                                    Name = "Ended At",
+                                    Value = "<t:{time_ended}>",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Commands executed**",
-                                    Value = "{commands_executed}",
+                                    Name = "Position",
+                                    Value = "`{position_x} {position_z} {position_y}`",
                                     Inline = true
-                                }
+                                },
                             ],
                             ColorHex = "#ff0000",
                             Footer = new()
@@ -115,37 +165,37 @@ namespace RestoreMonarchy.Duty
                         }
                     ]
                 },
-                DutyCommands = new()
+                DutyCommandLog = new()
                 {
-                   Enabled = false,
+                    Enabled = false,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
                         new()
                         {
-                            Title = "DutyCommands",
+                            Title = "{character_name} executed command on duty",
                             Thumbnail = new()
                             {
-                                Url = "{thumbnail}"
+                                Url = "{avatar_url}"
                             },
                             Fields =
                             [
                                 new()
                                 {
-                                    Name = "**Player**",
-                                    Value = "Steam Name: **[{name}](https://steamcommunity.com/profiles/{steam_id})** ({steam_id}) \n Character Name: **{charactername}** ",
+                                    Name = "Steam ID",
+                                    Value = "`{steam_id}`",
                                     Inline = true
                                 },
                                 new()
                                 {
-                                    Name = "**Command**",
-                                    Value = "Command: `{command}` \n",
+                                    Name = "Steam Name",
+                                    Value = "[{steam_name}](https://steamcommunity.com/profiles/{steam_id})",
                                     Inline = true
                                 },
-                                new()
+                                new() 
                                 {
-                                    Name = "**Cancelled**",
-                                    Value = "`{cancelled}` \n",
+                                    Name = "Command",
+                                    Value = "`{command}`",
                                     Inline = true
                                 }
                             ],

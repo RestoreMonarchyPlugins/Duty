@@ -6,6 +6,7 @@ using Rocket.API.Collections;
 using Rocket.Core;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Core.Steam;
 using Rocket.Unturned;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -20,11 +21,11 @@ namespace RestoreMonarchy.Duty;
 
 public class DutyPlugin : RocketPlugin<DutyConfiguration>
 {
-    public static DutyPlugin Instance;
-    private static DutyConfiguration config => Instance.Configuration.Instance;
-    public List<ActiveDuty> ActiveDuties;
-    public Dictionary<CSteamID, List<string>> ActiveDutyCommands;
-    public WebhookService WebhookService { get; set; }
+    public static DutyPlugin Instance { get; private set; }
+    private static DutyConfiguration configuration => Instance.Configuration.Instance;
+    public List<ActiveDuty> ActiveDuties { get; private set; }
+    public Dictionary<CSteamID, List<string>> ActiveDutyCommands { get; private set; }
+    public WebhookService WebhookService { get; private set; }
 
     protected override void Load()
     {
@@ -37,7 +38,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onDamageBarricadeRequested += BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested += BarricadeOpenRequest;
         ItemManager.onTakeItemRequested += ItemTakeRequested;
-        if (config.Discord.Enabled)
+        if (configuration.Discord.Enabled)
         {
             WebhookService = new();
             ActiveDutyCommands = [];
@@ -61,7 +62,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onOpenStorageRequested -= BarricadeOpenRequest;
         ItemManager.onTakeItemRequested -= ItemTakeRequested;
 
-        if (config.Discord.Enabled)
+        if (configuration.Discord.Enabled)
         {
             R.Commands.OnExecuteCommand -= OnCommandExecuted;
             ActiveDutyCommands.Clear();
@@ -94,7 +95,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = config.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
 
             if (dutyGroup != null && dutyGroup.DutySettings.BlockStorageInteraction)
             {
@@ -110,7 +111,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = config.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
 
             if (dutyGroup != null && dutyGroup.DutySettings.BlockStructureDamage)
             {
@@ -126,7 +127,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = config.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
 
             if (dutyGroup != null && dutyGroup.DutySettings.BlockBarricadeDamage)
             {
@@ -151,7 +152,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = config.DutyGroups.Find(dg => dg.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroups dutyGroup = configuration.DutyGroups.Find(dg => dg.DutyGroupName == activeDuty.DutyGroupName);
 
             if (dutyGroup != null && dutyGroup.DutySettings.BlockDamageToPlayers)
             {
@@ -162,7 +163,12 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     private void OnCommandExecuted(IRocketPlayer player, IRocketCommand command, ref bool cancel)
     {
-        if (ActiveDuties.Any() && config.Discord.Enabled && player is UnturnedPlayer unturnedPlayer)
+        if (cancel)
+        {
+            return;
+        }
+
+        if (ActiveDuties.Any() && configuration.Discord.Enabled && player is UnturnedPlayer unturnedPlayer)
         {
             if (ActiveDuties.Exists(x => x.PlayerId == unturnedPlayer.CSteamID))
             {
@@ -188,26 +194,33 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
                         UIHelper.EnableVanishUI(unturnedPlayer);
                     }
                 }
-                if (config.Discord.DutyCommands.Enabled)
+                if (configuration.Discord.DutyCommandLog.Enabled)
                 {
-                    Dictionary<string, object> param = new()
-                    {
-                        { "name", unturnedPlayer.SteamName },
-                        { "steam_id", unturnedPlayer.CSteamID.m_SteamID },
-                        { "charactername", unturnedPlayer.CharacterName},
-                        { "thumbnail", unturnedPlayer.SteamProfile.AvatarIcon.ToString()},
-                        { "server_name", Provider.serverName},
-                        { "command", command.Name },
-                        { "cancelled", cancel },
-                    };
+                    
                     ThreadHelper.RunAsynchronously(() => 
                     {
-                        WebhookService.SendMessage(config.Discord.DutyCommands, param);
+                        Profile profile = unturnedPlayer.SteamProfile;
+                        Dictionary<string, object> param = new()
+                        {
+                            { "steam_name", unturnedPlayer.SteamName },
+                            { "steam_id", unturnedPlayer.CSteamID.m_SteamID },
+                            { "character_name", unturnedPlayer.CharacterName},
+                            { "avatar_url", profile.AvatarFull.ToString()},
+                            { "avatar_url_small", profile.AvatarIcon.ToString()},
+                            { "server_name", Provider.serverName},
+                            { "command", command.Name },
+                        };
+
+                        WebhookService.SendMessage(configuration.Discord.DutyCommandLog, param);
                     });
                 }
                
                 ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
-                if (activeDuty == null) return;
+                if (activeDuty == null)
+                {
+                    return;
+                }
+
                 if (ActiveDutyCommands.ContainsKey(unturnedPlayer.CSteamID))
                 {
                     ActiveDutyCommands[unturnedPlayer.CSteamID].Add(command.Name);
@@ -225,7 +238,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(ad => ad.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(ad => ad.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = config.DutyGroups.Find(ad => ad.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroups dutyGroup = configuration.DutyGroups.Find(ad => ad.DutyGroupName == activeDuty.DutyGroupName);
             // Couldn't use x here due to the fact that function has a byte x parameter
             if (dutyGroup != null && dutyGroup.DutySettings.BlockItemPickup)
             {

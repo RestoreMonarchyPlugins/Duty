@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using Newtonsoft.Json;
 using RestoreMonarchy.Duty.Models.Discord;
 using Rocket.Core.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 
 namespace RestoreMonarchy.Duty.Services;
 

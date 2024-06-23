@@ -9,7 +9,7 @@ public class DiscordConfig
     public bool Enabled { get; set; }
     public WebhookMessage DutyStarted { get; set; }
     public WebhookMessage DutySummary { get; set; }
-    public WebhookMessage DutyCommands { get; set; }
+    public WebhookMessage DutyCommandLog { get; set; }
     
     public DiscordConfig()
     {
