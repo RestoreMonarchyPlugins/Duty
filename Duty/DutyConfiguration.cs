@@ -56,10 +56,10 @@ namespace RestoreMonarchy.Duty
             ];
             Discord = new()
             {
-                Enabled = true,
+                Enabled = false,
                 DutyStarted = new()
                 {
-                    Enabled = false,
+                    Enabled = true,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
@@ -120,7 +120,7 @@ namespace RestoreMonarchy.Duty
                 },
                 DutySummary = new()
                 {
-                    Enabled = false,
+                    Enabled = true,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
@@ -182,7 +182,7 @@ namespace RestoreMonarchy.Duty
                 },
                 DutyCommandLog = new()
                 {
-                    Enabled = false,
+                    Enabled = true,
                     WebhookUrl = "YOUR_WEBHOOK_URL",
                     Embeds =
                     [
