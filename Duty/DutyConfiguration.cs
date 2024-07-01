@@ -16,7 +16,7 @@ namespace RestoreMonarchy.Duty
 
         public void LoadDefaults()
         {
-            UIService = new UIService(true, 59501, 32000);
+            UIService = new UIService(true, 59501);
             DutyGroups =
             [
                 new()
