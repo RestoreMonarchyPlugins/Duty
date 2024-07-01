@@ -50,7 +50,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     protected override void Unload()
     {
-        foreach (ActiveDuty activeDuty in ActiveDuties)
+        foreach (ActiveDuty activeDuty in ActiveDuties.ToList())
         {
             DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
             DutyHelper.OffDuty(UnturnedPlayer.FromCSteamID(activeDuty.PlayerId), dutyGroup);
@@ -142,7 +142,7 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     private void PlayerLeft(UnturnedPlayer player)
     {
-        foreach (ActiveDuty activeDuty in ActiveDuties)
+        foreach (ActiveDuty activeDuty in ActiveDuties.ToList())
         {
             if (activeDuty.PlayerId == player.CSteamID)
             {
