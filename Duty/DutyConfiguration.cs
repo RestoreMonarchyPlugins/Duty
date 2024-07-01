@@ -1,30 +1,45 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Security.Policy;
-using System.Xml.Serialization;
-using RestoreMonarchy.Duty.Models;
-using RestoreMonarchy.Duty.Models.Discord;
+﻿using RestoreMonarchy.Duty.Models;
 using Rocket.API;
+using System.Collections.Generic;
 
 namespace RestoreMonarchy.Duty
 {
     public class DutyConfiguration : IRocketPluginConfiguration
     {
-        public UIService UIService { get; set; }
-        public List<DutyGroups> DutyGroups { get; set; }
+        public UIConfig UI { get; set; }
+        public List<DutyGroup> DutyGroups { get; set; }
         public DiscordConfig Discord { get; set; }
 
         public void LoadDefaults()
         {
-            UIService = new UIService(true, 59501);
+            UI = new UIConfig(true, 59501);
             DutyGroups =
             [
                 new()
                 {
-                    DutyGroupName = "Admin",
-                    PermGroup = "Admin",
+                    Name = "Admin",
+                    PermissionGroup = "Admin",
                     Permission = "duty.admin",
-                    DutySettings = new()
+                    Settings = new()
+                    {
+                        GodMode = true,
+                        Vanish = true,
+                        AdminFreecam = true,
+                        AdminEsp = true,
+                        AdminBuilding = true,
+                        BlockDamageToPlayers = false,
+                        BlockStructureDamage = false,
+                        BlockBarricadeDamage = false,
+                        BlockStorageInteraction = false,
+                        BlockItemPickup = false
+                    }
+                },
+                new()
+                {
+                    Name = "Moderator",
+                    PermissionGroup = "Moderator",
+                    Permission = "duty.moderator",
+                    Settings = new()
                     {
                         GodMode = true,
                         Vanish = true,

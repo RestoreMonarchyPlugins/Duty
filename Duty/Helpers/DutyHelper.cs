@@ -18,22 +18,24 @@ public static class DutyHelper
     private static DutyPlugin pluginInstance => DutyPlugin.Instance;
     private static DutyConfiguration config => pluginInstance.Configuration.Instance;
     private static WebhookService webhookService => pluginInstance.WebhookService;
-    public static void OnDuty(UnturnedPlayer player, string dutyName)
+    public static void OnDuty(UnturnedPlayer player, DutyGroup dutyGroup)
     {
-        DutyGroups dutyGroups = config.DutyGroups.Find(x => x.DutyGroupName == dutyName);
-        R.Permissions.AddPlayerToGroup(dutyGroups.PermGroup, player);
-        pluginInstance.ActiveDuties.Add(new ActiveDuty(player.CSteamID, dutyName, DateTime.UtcNow, config.DutyGroups.Find(x => x.DutyGroupName == dutyName).DutySettings));
-        UnturnedChat.Say(player.CSteamID, pluginInstance.Translate("duty_on", dutyName));
-        DutyGroups dutyGroup = config.DutyGroups.Find(x => x.DutyGroupName == dutyName);
-        DutySettings dutySettings = dutyGroup.DutySettings;
-        if (config.UIService.UIEnabled)
+        R.Permissions.AddPlayerToGroup(dutyGroup.PermissionGroup, player);
+        
+        ActiveDuty activeDuty = new(player.CSteamID, dutyGroup.Name, DateTime.UtcNow, dutyGroup.Settings);        
+        pluginInstance.ActiveDuties.Add(activeDuty);
+        
+        UnturnedChat.Say(player.CSteamID, pluginInstance.Translate("duty_on", dutyGroup.Name));
+        DutySettings dutySettings = dutyGroup.Settings;
+
+        if (config.UI.Enabled)
         {
             UIHelper.EnableDutyUI(player);
         }
         if (dutySettings.GodMode)
         {
             player.Features.GodMode = true;
-            if (config.UIService.UIEnabled)
+            if (config.UI.Enabled)
             {
                 UIHelper.EnableGodModeUI(player);
             }
@@ -42,7 +44,7 @@ public static class DutyHelper
         if (dutySettings.Vanish)
         {
             player.Features.VanishMode = true;
-            if (config.UIService.UIEnabled)
+            if (config.UI.Enabled)
             {
                 UIHelper.EnableVanishUI(player);
             }
@@ -75,27 +77,26 @@ public static class DutyHelper
                 {
                     { "steam_name", player.SteamName },
                     { "steam_id", player.CSteamID.m_SteamID },
-                    { "duty_name", dutyName },
+                    { "duty_name", dutyGroup.Name },
                     { "character_name", player.CharacterName },
                     { "avatar_url", profile.AvatarFull.ToString() },
                     { "avatar_url_small", profile.AvatarIcon.ToString() },
                     { "server_name", Provider.serverName },
                     { "permission", dutyGroup.Permission },
                     { "date", ((DateTimeOffset)date).ToUnixTimeSeconds() },
-                    { "position_x", player.Position.x },
-                    { "position_y", player.Position.y },
-                    { "position_z", player.Position.z }
+                    { "position_x", positionX },
+                    { "position_y", positionY },
+                    { "position_z", positionZ }
                 };
                 webhookService.SendMessage(config.Discord.DutyStarted, param);
             });           
         }
     }
     
-    public static void OffDuty(UnturnedPlayer player, string dutyName)
+    public static void OffDuty(UnturnedPlayer player, DutyGroup dutyGroup)
     {
         ulong secondsOnDuty = 0;
-        DutyGroups dutyGroups = config.DutyGroups.Find(dg => dg.DutyGroupName == dutyName);
-        R.Permissions.RemovePlayerFromGroup(dutyGroups.PermGroup, player);
+        R.Permissions.RemovePlayerFromGroup(dutyGroup.PermissionGroup, player);
         
         string[] commandsUsed;
         string commandsExecuted;
@@ -104,7 +105,7 @@ public static class DutyHelper
         if (pluginInstance.ActiveDutyCommands.ContainsKey(player.CSteamID))
         {
             commandsUsed = pluginInstance.ActiveDutyCommands[player.CSteamID].ToArray();
-            Logger.Log($"Commands used by {player.CSteamID}: {string.Join(", ", commandsUsed)}");
+            Logger.Log($"Commands used by {player.DisplayName} ({player.CSteamID}): {string.Join(", ", commandsUsed)}");
             pluginInstance.ActiveDutyCommands[player.CSteamID].Clear();
         }
 
@@ -120,40 +121,40 @@ public static class DutyHelper
         pluginInstance.ActiveDutyCommands.Remove(player.CSteamID);
         pluginInstance.ActiveDuties.RemoveAll(x => x.PlayerId == player.CSteamID);
 
-        if (config.UIService.UIEnabled)
+        if (config.UI.Enabled)
         {
             UIHelper.DisableDutyUI(player);
         }
 
-        if (dutyGroups.DutySettings.AdminEsp)
+        if (dutyGroup.Settings.AdminEsp)
         {
             player.Player.look.sendSpecStatsAllowed(false);
         }
 
-        if (dutyGroups.DutySettings.AdminFreecam)
+        if (dutyGroup.Settings.AdminFreecam)
         {
             player.Player.look.sendFreecamAllowed(false);
         }
 
-        if (dutyGroups.DutySettings.GodMode)
+        if (dutyGroup.Settings.GodMode)
         {
             player.Features.GodMode = false;
-            if (config.UIService.UIEnabled)
+            if (config.UI.Enabled)
             {
                 UIHelper.DisableGodModeUI(player);
             }
         }
 
-        if (dutyGroups.DutySettings.Vanish)
+        if (dutyGroup.Settings.Vanish)
         {
             player.Features.VanishMode = false;
-            if (config.UIService.UIEnabled)
+            if (config.UI.Enabled)
             {
                 UIHelper.DisableVanishUI(player);
             }
         }
 
-        if (dutyGroups.DutySettings.AdminBuilding)
+        if (dutyGroup.Settings.AdminBuilding)
         {
             player.Player.look.sendWorkzoneAllowed(false);
         }
@@ -176,7 +177,7 @@ public static class DutyHelper
                     { "avatar_url",profile.AvatarFull.ToString()},
                     { "avatar_url_small", profile.AvatarIcon.ToString() },
                     { "steam_id", player.CSteamID.m_SteamID },
-                    { "duty_name", dutyName },
+                    { "duty_name", dutyGroup.Name },
                     { "server_name", Provider.serverName },
                     { "time", secondsOnDuty },
                     { "commands_executed", commandsExecuted },

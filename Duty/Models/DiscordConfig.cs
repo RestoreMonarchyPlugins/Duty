@@ -10,9 +10,4 @@ public class DiscordConfig
     public WebhookMessage DutyStarted { get; set; }
     public WebhookMessage DutySummary { get; set; }
     public WebhookMessage DutyCommandLog { get; set; }
-    
-    public DiscordConfig()
-    {
-        
-    }
 }

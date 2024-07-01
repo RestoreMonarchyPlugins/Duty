@@ -7,15 +7,18 @@ A duty plugin designed to effectively manage and prevent abuse by your staff mem
 * Integrated with Discord embeds when duty starts or ends, including a summary and more.
 * Comes with an optional Duty UI.
 
-## Commands
-* **/Duty  \<Role\>** – Allows the staff member go on or off duty
-* **/D \<Role\>** – Alias for /Duty
+## Workshop
+[3270578447](https://steamcommunity.com/sharedfiles/filedetails/?id=3270578447) - DutyUI
 
-## Player Permissions
+## Commands
+* **/duty  \<group\>** – Allows the staff member go on or off duty
+* 
+
+## Permissions
 ```xml
-<Permission Cooldown="0">Duty</Permission>
-You can set the staff role permission in the configuration.
+<Permission Cooldown="0">duty</Permission>
 ```
+> You can set the staff role permission in the configuration.
 
 ## Configuration
 ```xml
@@ -24,8 +27,26 @@ You can set the staff role permission in the configuration.
   <UIService>
     <UIEnabled>true</UIEnabled>
     <EffectID>59501</EffectID>
-    <EffectKey>32000</EffectKey>
   </UIService>
+  <DutyGroups>
+    <DutyGroups>
+      <DutyGroupName>Admin</DutyGroupName>
+      <PermGroup>Admin</PermGroup>
+      <Permission>duty.admin</Permission>
+      <DutySettings>
+        <GodMode>true</GodMode>
+        <Vanish>true</Vanish>
+        <AdminFreecam>true</AdminFreecam>
+        <AdminEsp>true</AdminEsp>
+        <AdminBuilding>true</AdminBuilding>
+        <BlockDamageToPlayers>true</BlockDamageToPlayers>
+        <BlockStructureDamage>true</BlockStructureDamage>
+        <BlockBarricadeDamage>true</BlockBarricadeDamage>
+        <BlockStorageInteraction>true</BlockStorageInteraction>
+        <BlockItemPickup>true</BlockItemPickup>
+      </DutySettings>
+    </DutyGroups>
+  </DutyGroups>
   <Discord Enabled="true">
     <DutyStarted Enabled="true">
       <WebhookUrl>YOUR_WEBHOOK_URL</WebhookUrl>
@@ -80,31 +101,7 @@ You can set the staff role permission in the configuration.
       </Embeds>
     </DutyCommands>
   </Discord>
-  <DutyGroups>
-    <DutyGroups>
-      <DutyGroupName>Admin</DutyGroupName>
-      <PermGroup>Admin</PermGroup>
-      <Permission>duty.admin</Permission>
-      <DutySettings>
-        <GodMode>true</GodMode>
-        <Vanish>true</Vanish>
-        <AdminFreecam>true</AdminFreecam>
-        <AdminEsp>true</AdminEsp>
-        <AdminBuilding>true</AdminBuilding>
-        <BlockDamageToPlayers>true</BlockDamageToPlayers>
-        <BlockStructureDamage>true</BlockStructureDamage>
-        <BlockBarricadeDamage>true</BlockBarricadeDamage>
-        <BlockStorageInteraction>true</BlockStorageInteraction>
-        <BlockItemPickup>true</BlockItemPickup>
-      </DutySettings>
-    </DutyGroups>
-  </DutyGroups>
 </DutyConfiguration>
 ```
-
-## Optional Workshop UI
-[3270578447](https://steamcommunity.com/sharedfiles/filedetails/?id=3270578447) - DutyUI
-
-![](https://cdn.discordapp.com/attachments/1140246468230381638/1253433239780069446/image.png?ex=6675d62c&is=667484ac&hm=18da4c0e6dfe6377444ae556f030cbba44f76369f8897c0cf3eca13280579a34&)
 
 

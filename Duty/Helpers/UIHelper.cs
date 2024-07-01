@@ -9,7 +9,7 @@ public class UIHelper
     private static DutyPlugin pluginInstance => DutyPlugin.Instance;
     private static DutyConfiguration config => pluginInstance.Configuration.Instance;
 
-    private static ushort EffectId => config.UIService.EffectID;
+    private static ushort EffectId => config.UI.EffectID;
     private const short EffectKey = 29751;
 
     public static void EnableDutyUI(UnturnedPlayer player)

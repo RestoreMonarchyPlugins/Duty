@@ -52,7 +52,8 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
     {
         foreach (ActiveDuty activeDuty in ActiveDuties)
         {
-            DutyHelper.OffDuty(UnturnedPlayer.FromCSteamID(activeDuty.PlayerId), activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
+            DutyHelper.OffDuty(UnturnedPlayer.FromCSteamID(activeDuty.PlayerId), dutyGroup);
         }
 
         U.Events.OnPlayerDisconnected -= PlayerLeft;
@@ -76,13 +77,16 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     public override TranslationList DefaultTranslations => new()
     {
-        {"duty_command_usage", "Invalid syntax! Correct syntax: /duty <duty name>"},
-        {"duty_invalid_name", "Invalid duty name!"},
-        {"duty_no_permission", "You do not have permission to go on duty as {0}"},
+        {"duty_no_permissions", "You don't have permission to use any duty group."},
+        {"duty_list","Available duty groups: {0}"},
+        {"duty_invalid_name", "{0} is not a valid duty name."},
+        {"duty_no_permission", "You do not have permission to go on duty as {0}."},
         {"duty_on", "You have gone on duty as {0}"},
         {"duty_off", "You have gone off duty"},
         {"duty_no_group", "Duty group {0} does not exist!"},
         {"duty_no_permission_group", "You do not have permission to go on duty as {0}"},
+        { "duty_not_on", "You don't have any active duty." },
+        { "duty_already", "You are already on duty as {0}." }
    };
 
 
@@ -95,9 +99,9 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
 
-            if (dutyGroup != null && dutyGroup.DutySettings.BlockStorageInteraction)
+            if (dutyGroup != null && dutyGroup.Settings.BlockStorageInteraction)
             {
                 shouldallow = false;
             }
@@ -111,9 +115,9 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
 
-            if (dutyGroup != null && dutyGroup.DutySettings.BlockStructureDamage)
+            if (dutyGroup != null && dutyGroup.Settings.BlockStructureDamage)
             {
                 shouldallow = false;
             }
@@ -127,9 +131,9 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = configuration.DutyGroups.Find(x => x.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
 
-            if (dutyGroup != null && dutyGroup.DutySettings.BlockBarricadeDamage)
+            if (dutyGroup != null && dutyGroup.Settings.BlockBarricadeDamage)
             {
                 shouldallow = false;
             }
@@ -138,10 +142,14 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
 
     private void PlayerLeft(UnturnedPlayer player)
     {
-        if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.CSteamID))
+        foreach (ActiveDuty activeDuty in ActiveDuties)
         {
-            DutyHelper.OffDuty(player, ActiveDuties.Find(x => x.PlayerId == player.CSteamID).DutyGroupName);
-            ActiveDuties.RemoveAll(x => x.PlayerId == player.CSteamID);
+            if (activeDuty.PlayerId == player.CSteamID)
+            {
+                DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
+                DutyHelper.OffDuty(player, dutyGroup);
+                ActiveDuties.RemoveAll(x => x.PlayerId == player.CSteamID);
+            }
         }
     }
 
@@ -152,9 +160,9 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(x => x.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(x => x.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = configuration.DutyGroups.Find(dg => dg.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(dg => dg.Name == activeDuty.DutyGroupName);
 
-            if (dutyGroup != null && dutyGroup.DutySettings.BlockDamageToPlayers)
+            if (dutyGroup != null && dutyGroup.Settings.BlockDamageToPlayers)
             {
                 shouldallow = false;
             }
@@ -238,9 +246,9 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         if (ActiveDuties.Any() && ActiveDuties.Exists(ad => ad.PlayerId == player.channel.owner.playerID.steamID))
         {
             ActiveDuty activeDuty = ActiveDuties.First(ad => ad.PlayerId == player.channel.owner.playerID.steamID);
-            DutyGroups dutyGroup = configuration.DutyGroups.Find(ad => ad.DutyGroupName == activeDuty.DutyGroupName);
+            DutyGroup dutyGroup = configuration.DutyGroups.Find(ad => ad.Name == activeDuty.DutyGroupName);
             // Couldn't use x here due to the fact that function has a byte x parameter
-            if (dutyGroup != null && dutyGroup.DutySettings.BlockItemPickup)
+            if (dutyGroup != null && dutyGroup.Settings.BlockItemPickup)
             {
                 shouldallow = false;
             }
