@@ -7,6 +7,10 @@ Effectively manage and prevent abuse of staff members.
 * Integrated with Discord embeds when duty starts or ends, including a summary and more.
 * Comes with an optional Duty UI.
 
+## Credits
+* **[tonislcs](https://github.com/tonislcs)** for making this plugin
+* **soer** for making the UI
+
 ## Workshop
 [3270578447](https://steamcommunity.com/sharedfiles/filedetails/?id=3270578447) - DutyUI
 
