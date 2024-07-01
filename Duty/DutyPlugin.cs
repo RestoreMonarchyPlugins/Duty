@@ -38,10 +38,12 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onDamageBarricadeRequested += BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested += BarricadeOpenRequest;
         ItemManager.onTakeItemRequested += ItemTakeRequested;
+        
+        WebhookService = new();
+        ActiveDutyCommands = [];
+
         if (configuration.Discord.Enabled)
         {
-            WebhookService = new();
-            ActiveDutyCommands = [];
             R.Commands.OnExecuteCommand += OnCommandExecuted;
         }
 
@@ -53,7 +55,8 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         foreach (ActiveDuty activeDuty in ActiveDuties.ToList())
         {
             DutyGroup dutyGroup = configuration.DutyGroups.Find(x => x.Name == activeDuty.DutyGroupName);
-            DutyHelper.OffDuty(UnturnedPlayer.FromCSteamID(activeDuty.PlayerId), dutyGroup);
+            UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromCSteamID(activeDuty.PlayerId);
+            DutyHelper.OffDuty(unturnedPlayer, dutyGroup);
         }
 
         U.Events.OnPlayerDisconnected -= PlayerLeft;

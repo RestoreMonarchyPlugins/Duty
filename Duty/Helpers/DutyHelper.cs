@@ -62,6 +62,7 @@ public static class DutyHelper
         {
             player.Player.look.sendWorkzoneAllowed(true);
         }
+
         if (config.Discord.Enabled && config.Discord.DutyStarted.Enabled)
         {
             DateTime date = DateTime.UtcNow;
@@ -95,6 +96,15 @@ public static class DutyHelper
     
     public static void OffDuty(UnturnedPlayer player, DutyGroup dutyGroup)
     {
+        if (player == null)
+        {
+            throw new ArgumentNullException(nameof(player));
+        }
+        if (dutyGroup == null)
+        {
+            throw new ArgumentNullException(nameof(dutyGroup));
+        }
+
         ulong secondsOnDuty = 0;
         R.Permissions.RemovePlayerFromGroup(dutyGroup.PermissionGroup, player);
         

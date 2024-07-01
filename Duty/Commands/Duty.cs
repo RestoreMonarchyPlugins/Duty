@@ -78,7 +78,7 @@ public class Duty : IRocketCommand
     public AllowedCaller AllowedCaller => AllowedCaller.Player;
     public string Name => "duty";
     public string Help => "Toggle your duty status";
-    public string Syntax => "<duty name>";
-    public List<string> Aliases => new List<string> { "d" };
-    public List<string> Permissions => new List<string> { "duty.commands" };
+    public string Syntax => "<group/off>";
+    public List<string> Aliases => new();
+    public List<string> Permissions => new();
 }
