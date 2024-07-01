@@ -1,4 +1,4 @@
-﻿# Duty
+﻿# Duty  
 Effectively manage and prevent abuse of staff members.
 
 ## Features
