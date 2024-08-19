@@ -57,6 +57,10 @@ public static class DutyHelper
         {
             player.Player.look.sendSpecStatsAllowed(true);
         }
+        if (dutySettings.AdminBlueHammer)
+        {
+            player.Player.channel.owner.isAdmin = true;
+        }
 
         if (dutySettings.AdminBuilding)
         {
@@ -144,6 +148,11 @@ public static class DutyHelper
         if (dutyGroup.Settings.AdminFreecam)
         {
             player.Player.look.sendFreecamAllowed(false);
+        }
+
+        if (dutyGroup.Settings.AdminBlueHammer)
+        {
+            player.Player.channel.owner.isAdmin = false;
         }
 
         if (dutyGroup.Settings.GodMode)

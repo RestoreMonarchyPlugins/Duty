@@ -24,6 +24,7 @@ namespace RestoreMonarchy.Duty
                     {
                         GodMode = true,
                         Vanish = true,
+                        AdminBlueHammer = true,
                         AdminFreecam = true,
                         AdminEsp = true,
                         AdminBuilding = true,
@@ -43,6 +44,7 @@ namespace RestoreMonarchy.Duty
                     {
                         GodMode = true,
                         Vanish = true,
+                        AdminBlueHammer = false,
                         AdminFreecam = true,
                         AdminEsp = true,
                         AdminBuilding = true,

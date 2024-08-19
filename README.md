@@ -39,6 +39,7 @@ Effectively manage and prevent abuse of staff members.
       <Settings>
         <GodMode>true</GodMode>
         <Vanish>true</Vanish>
+        <AdminBlueHammer>true</AdminBlueHammer>
         <AdminFreecam>true</AdminFreecam>
         <AdminEsp>true</AdminEsp>
         <AdminBuilding>true</AdminBuilding>
@@ -55,6 +56,7 @@ Effectively manage and prevent abuse of staff members.
       <Settings>
         <GodMode>true</GodMode>
         <Vanish>true</Vanish>
+        <AdminBlueHammer>false</AdminBlueHammer>
         <AdminFreecam>true</AdminFreecam>
         <AdminEsp>true</AdminEsp>
         <AdminBuilding>true</AdminBuilding>
