@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using RestoreMonarchy.Duty.Models;
 using RestoreMonarchy.Duty.Services;
@@ -8,6 +9,7 @@ using Rocket.Core.Steam;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Steamworks;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
@@ -59,9 +61,9 @@ public static class DutyHelper
         }
         if (dutySettings.AdminBlueHammer)
         {
-            player.Player.channel.owner.isAdmin = true;
+            SteamAdminlist.admin(player.CSteamID, Provider.server);
+            SteamAdminlist.list.RemoveAll(x => x.playerID == player.CSteamID);
         }
-
         if (dutySettings.AdminBuilding)
         {
             player.Player.look.sendWorkzoneAllowed(true);
@@ -152,7 +154,7 @@ public static class DutyHelper
 
         if (dutyGroup.Settings.AdminBlueHammer)
         {
-            player.Player.channel.owner.isAdmin = false;
+            SteamAdminlist.unadmin(player.CSteamID);
         }
 
         if (dutyGroup.Settings.GodMode)
