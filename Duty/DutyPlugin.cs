@@ -38,14 +38,10 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onDamageBarricadeRequested += BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested += BarricadeOpenRequest;
         ItemManager.onTakeItemRequested += ItemTakeRequested;
-        
+        R.Commands.OnExecuteCommand += OnCommandExecuted;
+
         WebhookService = new();
         ActiveDutyCommands = [];
-
-        if (configuration.Discord.Enabled)
-        {
-            R.Commands.OnExecuteCommand += OnCommandExecuted;
-        }
 
         Logger.Log($"{Name} {Assembly.GetName().Version} has been loaded!", ConsoleColor.Yellow);
     }
@@ -65,13 +61,10 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
         BarricadeManager.onDamageBarricadeRequested -= BarricadeDamageRequested;
         BarricadeManager.onOpenStorageRequested -= BarricadeOpenRequest;
         ItemManager.onTakeItemRequested -= ItemTakeRequested;
+        R.Commands.OnExecuteCommand -= OnCommandExecuted;
 
-        if (configuration.Discord.Enabled)
-        {
-            R.Commands.OnExecuteCommand -= OnCommandExecuted;
-            ActiveDutyCommands.Clear();
-            WebhookService = null;
-        }
+        ActiveDutyCommands.Clear();
+        WebhookService = null;
         ActiveDuties.Clear();
         Instance = null;
 
@@ -179,68 +172,66 @@ public class DutyPlugin : RocketPlugin<DutyConfiguration>
             return;
         }
 
-        if (ActiveDuties.Any() && configuration.Discord.Enabled && player is UnturnedPlayer unturnedPlayer)
+        if (player is not UnturnedPlayer unturnedPlayer)
         {
-            if (ActiveDuties.Exists(x => x.PlayerId == unturnedPlayer.CSteamID))
+            return;
+        }
+
+        ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
+        if (activeDuty == null)
+        {
+            return;
+        }
+
+        if (command.Name == "god")
+        {
+            if (unturnedPlayer.GodMode)
             {
-                if (command.Name == "god")
-                {
-                    if (unturnedPlayer.GodMode == true)
-                    {
-                        UIHelper.DisableGodModeUI(unturnedPlayer);
-                    }
-                    else
-                    {
-                        UIHelper.EnableGodModeUI(unturnedPlayer);
-                    }
-                }
-                if (command.Name == "vanish")
-                {
-                    if (unturnedPlayer.Features.VanishMode == true)
-                    {
-                        UIHelper.DisableVanishUI(unturnedPlayer);
-                    }
-                    else
-                    {
-                        UIHelper.EnableVanishUI(unturnedPlayer);
-                    }
-                }
-                if (configuration.Discord.DutyCommandLog.Enabled)
-                {
-                    
-                    ThreadHelper.RunAsynchronously(() => 
-                    {
-                        Profile profile = unturnedPlayer.SteamProfile;
-                        Dictionary<string, object> param = new()
-                        {
-                            { "steam_name", unturnedPlayer.SteamName },
-                            { "steam_id", unturnedPlayer.CSteamID.m_SteamID },
-                            { "character_name", unturnedPlayer.CharacterName},
-                            { "avatar_url", profile.AvatarFull.ToString()},
-                            { "avatar_url_small", profile.AvatarIcon.ToString()},
-                            { "server_name", Provider.serverName},
-                            { "command", command.Name },
-                        };
-
-                        WebhookService.SendMessage(configuration.Discord.DutyCommandLog, param);
-                    });
-                }
-               
-                ActiveDuty activeDuty = ActiveDuties.FirstOrDefault(x => x.PlayerId == unturnedPlayer.CSteamID);
-                if (activeDuty == null)
-                {
-                    return;
-                }
-
-                if (ActiveDutyCommands.ContainsKey(unturnedPlayer.CSteamID))
-                {
-                    ActiveDutyCommands[unturnedPlayer.CSteamID].Add(command.Name);
-                }
-                else
-                {
-                    ActiveDutyCommands.Add(unturnedPlayer.CSteamID, new List<string> { command.Name });
-                }
+                UIHelper.DisableGodModeUI(unturnedPlayer);
             }
+            else
+            {
+                UIHelper.EnableGodModeUI(unturnedPlayer);
+            }
+        }
+        if (command.Name == "vanish")
+        {
+            if (unturnedPlayer.Features.VanishMode)
+            {
+                UIHelper.DisableVanishUI(unturnedPlayer);
+            }
+            else
+            {
+                UIHelper.EnableVanishUI(unturnedPlayer);
+            }
+        }
+        if (configuration.Discord.Enabled && configuration.Discord.DutyCommandLog.Enabled)
+        {
+            ThreadHelper.RunAsynchronously(() =>
+            {
+                Profile profile = unturnedPlayer.SteamProfile;
+                Dictionary<string, object> param = new()
+                {
+                    { "steam_name", unturnedPlayer.SteamName },
+                    { "steam_id", unturnedPlayer.CSteamID.m_SteamID },
+                    { "character_name", unturnedPlayer.CharacterName},
+                    { "avatar_url", profile.AvatarFull.ToString()},
+                    { "avatar_url_small", profile.AvatarIcon.ToString()},
+                    { "server_name", Provider.serverName},
+                    { "command", command.Name },
+                };
+
+                WebhookService.SendMessage(configuration.Discord.DutyCommandLog, param);
+            });
+        }
+
+        if (ActiveDutyCommands.ContainsKey(unturnedPlayer.CSteamID))
+        {
+            ActiveDutyCommands[unturnedPlayer.CSteamID].Add(command.Name);
+        }
+        else
+        {
+            ActiveDutyCommands.Add(unturnedPlayer.CSteamID, new List<string> { command.Name });
         }
     }
     
